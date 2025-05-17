@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Enums\TeamRole;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
@@ -21,7 +22,9 @@ class TeamPolicy
      */
     public function view(User $user, Team $team): bool
     {
-        return false;
+        return $team->users()
+            ->where('user_id', $user->id)
+            ->exists();
     }
 
     /**
@@ -37,7 +40,10 @@ class TeamPolicy
      */
     public function update(User $user, Team $team): bool
     {
-        return false;
+        return $team->users()
+            ->where('user_id', $user->id)
+            ->where('role', TeamRole::Owner)
+            ->exists();
     }
 
     /**

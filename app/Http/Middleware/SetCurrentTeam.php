@@ -18,6 +18,11 @@ class SetCurrentTeam
             Filament::setTenant($team);
         }
 
+        if ($request->user() && ($tenant = Filament::getTenant()) && $request->user()->team_id != $tenant->id) {
+            $request->user()->team_id = $tenant->id;
+            $request->user()->saveQuietly();
+        }
+
         return $next($request);
     }
 }

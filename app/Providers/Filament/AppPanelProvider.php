@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\Tenancy\EditTeam;
 use App\Filament\Pages\Tenancy\RegisterTeam;
 use App\Http\Middleware\SetCurrentTeam;
 use App\Models\Team;
@@ -33,6 +34,7 @@ class AppPanelProvider extends PanelProvider
             ->viteTheme('resources/css/filament/app/theme.css')
             ->tenant(Team::class, slugAttribute: 'slug')
             ->tenantRegistration(RegisterTeam::class)
+            ->tenantProfile(EditTeam::class)
             ->tenantMiddleware([
                 SetCurrentTeam::class,
             ])
