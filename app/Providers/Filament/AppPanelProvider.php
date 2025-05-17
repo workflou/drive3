@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\Tenancy\RegisterTeam;
 use App\Http\Middleware\SetCurrentTeam;
 use App\Models\Team;
 use Filament\Http\Middleware\Authenticate;
@@ -31,6 +32,7 @@ class AppPanelProvider extends PanelProvider
             ->brandLogo(fn() => view('filament.logo'))
             ->viteTheme('resources/css/filament/app/theme.css')
             ->tenant(Team::class, slugAttribute: 'slug')
+            ->tenantRegistration(RegisterTeam::class)
             ->tenantMiddleware([
                 SetCurrentTeam::class,
             ])

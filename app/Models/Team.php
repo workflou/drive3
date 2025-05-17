@@ -8,6 +8,7 @@ use Filament\Models\Contracts\HasCurrentTenantLabel;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 #[ObservedBy(TeamObserver::class)]
 class Team extends Model implements HasCurrentTenantLabel
@@ -24,6 +25,14 @@ class Team extends Model implements HasCurrentTenantLabel
     protected $casts = [
         'type' => TeamType::class,
     ];
+
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class)
+            ->using(TeamUser::class)
+            ->withPivot('role')
+            ->withTimestamps();
+    }
 
     public function getCurrentTenantLabel(): string
     {

@@ -18,8 +18,8 @@ return new class extends Migration
         });
 
         Schema::create('team_user', function (Blueprint $table) {
-            $table->foreignId('team_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('team_id')->constrained('teams')->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->primary(['team_id', 'user_id']);
             $table->unique(['team_id', 'user_id']);
             $table->string('role')->default('member');

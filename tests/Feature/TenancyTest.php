@@ -1,9 +1,12 @@
 <?php
 
+use App\Enums\TeamRole;
 use App\Enums\TeamType;
+use App\Filament\Pages\Tenancy\RegisterTeam;
 use App\Models\User;
 use Filament\Facades\Filament;
 use Filament\Pages\Dashboard;
+use Livewire\Livewire;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertDatabaseHas;
@@ -16,6 +19,7 @@ test('new users have a personal team', function () {
     expect($user->teams)->toHaveCount(1);
     expect($user->teams[0]->type)->toBe(TeamType::Personal);
     expect($user->teams[0]->name)->toBe($user->name . "'s Team");
+    expect($user->teams[0]->pivot->role)->toBe(TeamRole::Owner);
 });
 
 test('new teams have a slug', function () {
@@ -46,4 +50,29 @@ test('default team is saved when empty', function () {
     ]);
 
     expect(Filament::getTenant()?->id)->toBe($user->teams[0]->id);
+});
+
+test('creating new team', function () {
+    $user = User::factory()->create([
+        'name' => 'John Doe',
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(RegisterTeam::class)
+        ->fillForm([
+            'name' => 'My Team',
+        ])
+        ->call('register')
+        ->assertHasNoErrors();
+
+    assertDatabaseHas('teams', [
+        'name' => 'My Team',
+        'type' => TeamType::Business,
+    ]);
+
+    assertDatabaseHas('team_user', [
+        'user_id' => $user->id,
+        'team_id' => $user->teams[1]->id,
+        'role' => TeamRole::Owner,
+    ]);
 });
