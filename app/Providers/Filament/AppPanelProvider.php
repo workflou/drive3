@@ -6,14 +6,18 @@ use App\Filament\Pages\Tenancy\EditTeam;
 use App\Filament\Pages\Tenancy\RegisterTeam;
 use App\Http\Middleware\SetCurrentTeam;
 use App\Models\Team;
+use Filament\Facades\Filament;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\NavigationGroup;
+use Filament\Navigation\NavigationItem;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\Support\Icons\Heroicon;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -37,6 +41,18 @@ class AppPanelProvider extends PanelProvider
             ->tenantProfile(EditTeam::class)
             ->tenantMiddleware([
                 SetCurrentTeam::class,
+            ])
+            ->navigationGroups([
+                NavigationGroup::make(fn() => Filament::getTenant()->name)
+                    ->label(__('Team'))
+            ])
+            ->navigationItems([
+                NavigationItem::make('team-settings')
+                    ->label(__('Team Settings'))
+                    ->group(fn() => Filament::getTenant()->name)
+                    ->visible(fn() => auth()->user()->can('update', Filament::getTenant()))
+                    ->url(fn() => route('filament.app.tenant.profile', ['tenant' => Filament::getTenant()]))
+                    ->icon(Heroicon::Cog)
             ])
             ->login()
             ->registration()
