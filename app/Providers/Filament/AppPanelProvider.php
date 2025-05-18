@@ -34,6 +34,7 @@ class AppPanelProvider extends PanelProvider
         return $panel
             ->default()
             ->id('app')
+            ->spa()
             ->brandLogo(fn() => view('filament.logo'))
             ->viteTheme('resources/css/filament/app/theme.css')
             ->tenant(Team::class, slugAttribute: 'slug')
@@ -83,6 +84,7 @@ class AppPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
             ])
+            ->renderHook('panels::auth.login.form.after', fn() => view('auth.google'))
             ->authMiddleware([
                 Authenticate::class,
             ]);
