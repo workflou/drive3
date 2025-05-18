@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Observers\UserObserver;
 use Filament\Models\Contracts\FilamentUser;
+use Filament\Models\Contracts\HasAvatar;
 use Filament\Models\Contracts\HasDefaultTenant;
 use Filament\Models\Contracts\HasTenants;
 use Filament\Panel;
@@ -18,7 +19,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
 
 #[ObservedBy(UserObserver::class)]
-class User extends Authenticatable implements MustVerifyEmail, FilamentUser, HasTenants, HasDefaultTenant
+class User extends Authenticatable implements MustVerifyEmail, FilamentUser, HasTenants, HasDefaultTenant, HasAvatar
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
@@ -27,6 +28,8 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser, Has
         'name',
         'email',
         'password',
+        'avatar',
+        'email_verified_at',
     ];
 
     protected $hidden = [
@@ -76,5 +79,11 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser, Has
     public function canAccessTenant(Model $tenant): bool
     {
         return $this->teams()->whereKey($tenant)->exists();
+    }
+
+
+    public function getFilamentAvatarUrl(): ?string
+    {
+        return $this->avatar;
     }
 }
